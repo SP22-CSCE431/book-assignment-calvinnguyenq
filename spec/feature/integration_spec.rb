@@ -1,18 +1,63 @@
-# location: spec/feature/integration_spec.rb
+# location: spec/unit/unit_spec.rb
 require 'rails_helper'
 
-RSpec.describe 'Creating a book', type: :feature do
-  scenario 'valid inputs' do
-    visit new_book_path
-    fill_in 'Title', with: 'harry potter'
-    fill_in 'author', with: 'jk rowling'
-    fill_in 'prices', with: '5.00'
-    fill_in 'publisheddate', with: '2022-01-31'
-    click_on 'Create Book'
-    visit books_path
-    expect(page).to have_content('harry potter')
-    expect(page).to have_content('jk rowling')
-    expect(page).to have_content('5.0')
-    expect(page).to have_content('harry potter')
+RSpec.describe Book, type: :model do
+  subject do
+    described_class.new(
+      title: 'harry potter',
+      author: 'j.k. rowling',
+      price: 50,
+      published_date: "2017-01-29"
+    )
   end
+  
+  context 'valid properties' do 
+    it 'is valid with valid attributes' do
+      expect(subject).to be_valid
+    end
+  end
+
+  context 'nil properties' do
+    it 'is not valid without a name' do
+      subject.title = nil
+      expect(subject).not_to be_valid
+    end
+  
+    it 'is not valid without an author' do
+      subject.author = nil
+      expect(subject).not_to be_valid
+    end
+  
+    it 'is not valid without a price' do
+      subject.price = nil
+      expect(subject).not_to be_valid
+    end
+  
+    it 'is not valid without a date' do
+      subject.published_date = nil
+      expect(subject).not_to be_valid
+    end
+  end
+
+  context 'invalid properties' do
+    it 'is not valid to only have spaces in title' do 
+      subject.title = "    "
+      if (subject.title.blank?)
+        expect(subject).not_to be_valid
+      end
+    end
+
+    it 'is not valid to only have spaces in author name' do 
+      subject.author = "        "
+      if (subject.author.blank?)
+        expect(subject).not_to be_valid
+      end
+    end
+
+    it 'is not valid to have negative price' do 
+      subject.price = -5
+      expect(subject).not_to be_valid
+    end
+  end
+
 end
